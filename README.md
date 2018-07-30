@@ -48,6 +48,13 @@ import AdSense from 'react-adsense';
   layout='in-article'
   format='fluid'
 />
+
+// responsive and native ads
+<AdSense.Google
+  client='ca-pub-7292810486004926'
+  slot='7806394673'
+  isTest=true
+/>
 ```
 
 
@@ -60,7 +67,9 @@ import AdSense from 'react-adsense';
    - `className`:
    - `style`:
    - `layout`:
+   - `layoutKey`:
    - `format`:
+   - `isTest`: set this to `true` while development on localhost/test server 
 
 
 # 4. TODO
