@@ -24,10 +24,10 @@ const MainComponent = React.createClass({
         </pre>
 
         <h2> 3. default props </h2>
-        <AdSense.Google
-          client='ca-pub-1573644262300775'
-          slot='5024324066'
-        />
+        {/*<AdSense.Google*/}
+        {/*client='ca-pub-1573644262300775'*/}
+        {/*slot='5024324066'*/}
+        {/*/>*/}
 
         <h2> 4. in-article layout + autoCollapseEmptyAds </h2>
         <AdSense.Google
@@ -38,13 +38,13 @@ const MainComponent = React.createClass({
         />
 
         <h2> 5. full-config Demo </h2>
-        <AdSense.Google
-          client='ca-pub-1573644262300775'
-          slot='5024324066'
-          style={{ width: 500, height: 300, float: 'left' }}
-          layout='in-article'
-          format=''
-        />
+        {/*<AdSense.Google*/}
+        {/*client='ca-pub-1573644262300775'*/}
+        {/*slot='5024324066'*/}
+        {/*style={{ width: 500, height: 300, float: 'left' }}*/}
+        {/*layout='in-article'*/}
+        {/*format=''*/}
+        {/*/>*/}
       </div>
     );
   }

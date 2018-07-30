@@ -2,52 +2,79 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class Google extends React.Component {
-  checkIfAdIsEmpty(node) {
-    const adNode = node || document.getElementById(this.uniqueId);
-    console.log('now check if there is something in the iframe');
-    let iframeOutter = adNode.getElementsByTagName('iframe')[0];
+  checkIfAdIsEmptyWithCachedIframe() {
+    console.log('iframeWithAd:', this.iframeWithAd);
+    console.log('body.innerHTML', this.iframeWithAd.body.innerHTML, this.iframeWithAd.body.innerHTML.length);
+    if (!this.iframeWithAd.body.innerHTML || this.iframeWithAd.body.innerHTML.length === 0) {
+      // hide the Ad
+      this.adNode.style.display = 'none';
+    } else {
+      this.adNode.style.display = 'block';
+    }
+  }
+
+  checkIfAdIsEmpty() {
+    if (this.iframeWithAd) {
+      // iframeWithAd is already cached
+      console.log('iframeWithAd is already cached');
+      this.checkIfAdIsEmptyWithCachedIframe();
+      return;
+    }
+
+    console.log(new Date(), 'now check if there is something in the iframe', this.adNode);
+    let iframeOutter = this.adNode.getElementsByTagName('iframe')[0];
     if (!iframeOutter) return;
     iframeOutter = iframeOutter.contentDocument || iframeOutter.contentWindow.document;
     console.log('iframeOutter:', iframeOutter);
 
-    let iframeWithAd = iframeOutter.getElementsByTagName('iframe');
+    this.iframeWithAd = iframeOutter.getElementsByTagName('iframe');
     // [0] = google_esf; this is only in the first Ad, if you have more than 2 Ads on a page, then
     // the second iframe does not include this google_esf iframe
     // [1] = google_ads_frame[x]
-    iframeWithAd = iframeWithAd[1] || iframeWithAd[0];
-    if (!iframeWithAd) return;
-    iframeWithAd = iframeWithAd.contentDocument || iframeWithAd.contentWindow.document;
+    this.iframeWithAd = this.iframeWithAd[1] || this.iframeWithAd[0];
+    if (!this.iframeWithAd) return;
+    this.iframeWithAd = this.iframeWithAd.contentDocument || this.iframeWithAd.contentWindow.document;
 
-    console.log('iframeWithAd:', iframeWithAd);
-    console.log('body', iframeWithAd.body);
-    console.log('.innerHTML', iframeWithAd.body.innerHTML, iframeWithAd.body.innerHTML.length);
-    if (!iframeWithAd.body.innerHTML || iframeWithAd.body.innerHTML.length === 0) {
-      // hide the Ad
-      adNode.style.display = 'none';
-    }
+    this.checkIfAdIsEmptyWithCachedIframe();
   }
 
   startObserver() {
-    const adNode = document.getElementById(this.uniqueId);
-    console.log('startObserver on:', adNode);
+    this.adNode = document.getElementById(this.uniqueId);
+    console.log('startObserver on:', this.adNode);
+
     const callback = (mutationsList) => {
       for (let mutation of mutationsList) {
-        if (mutation.type === 'attributes') {
-          console.log(this.uniqueId, 'The "' + mutation.attributeName + '" attribute was modified.');
-          // google sdk changes this attr to "done" once its done
-          if (mutation.attributeName === 'data-adsbygoogle-status') {
-            // now check if there is something in the iframe
-            this.checkIfAdIsEmpty(adNode);
-          }
+        console.log('mutation', new Date(), {
+            type: mutation.type,
+            attributeName: mutation.attributeName,
+            targetId: mutation.target.id,
+            adNodeId: this.adNode.id,
+          },
+          mutation);
+        if (
+          // all-non style
+          mutation.attributeName !== 'style'
+          // all style, but not the adNode element, otherwise circular hell
+          || (mutation.attributeName === 'style' && mutation.target.id !== this.adNode.id)
+        ) {
+          this.checkIfAdIsEmpty();
         }
+
+        // if (mutation.type === 'attributes') {
+        //   console.log(this.uniqueId, 'The "' + mutation.attributeName + '" attribute was modified.');
+        //   // google sdk changes this attr to "done" once its done
+        //   if (mutation.attributeName === 'data-adsbygoogle-status') {
+        //     // now check if there is something in the iframe
+        //     this.checkIfAdIsEmpty(this.adNode);
+        //   }
+        // }
       }
     };
 
     // Create an observer instance linked to the callback function
     this.observer = new MutationObserver(callback);
     // Start observing the target node for configured mutations
-    this.observer.observe(adNode, { attributes: true });
-
+    this.observer.observe(this.adNode, { attributes: true, childList: true, subtree: true });
   }
 
   stopObserver() {
