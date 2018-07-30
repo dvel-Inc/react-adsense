@@ -5,7 +5,7 @@ export default class Google extends React.Component {
   checkIfAdIsEmpty(node) {
     const adNode = node || document.getElementById(this.uniqueId);
     console.log('now check if there is something in the iframe');
-    let iframeOutter = targetNode.getElementsByTagName('iframe')[0];
+    let iframeOutter = adNode.getElementsByTagName('iframe')[0];
     if (!iframeOutter) return;
     iframeOutter = iframeOutter.contentDocument || iframeOutter.contentWindow.document;
     console.log('iframeOutter:', iframeOutter);
