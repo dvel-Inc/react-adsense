@@ -10,6 +10,7 @@ export default class Google extends React.Component {
       for (let mutation of mutationsList) {
         if (mutation.type === 'attributes') {
           console.log(this.uniqueId, 'The "' + mutation.attributeName + '" attribute was modified.');
+          // google sdk changes this attr to "done" once its done
           if (mutation.attributeName === 'data-adsbygoogle-status') {
             // now check if there is something in the iframe
             console.log('now check if there is something in the iframe');
