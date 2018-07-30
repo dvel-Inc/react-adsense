@@ -48,13 +48,6 @@ import AdSense from 'react-adsense';
   layout='in-article'
   format='fluid'
 />
-
-// test while development on localhost
-<AdSense.Google
-  client='ca-pub-7292810486004926'
-  slot='7806394673'
-  isTest
-/>
 ```
 
 

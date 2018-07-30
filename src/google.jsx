@@ -16,7 +16,6 @@ export default class Google extends React.Component {
         data-ad-layout-key={this.props.layoutKey}
         data-ad-format={this.props.format}
         data-full-width-responsive={this.props.responsive}
-        data-adtest={this.props.isTest ? 'on' : null}
       >
       </ins>
     );
@@ -32,7 +31,6 @@ Google.propTypes = {
   layoutKey: PropTypes.string,
   format: PropTypes.string,
   responsive: PropTypes.string,
-  isTest: PropTypes.bool,
 };
 
 Google.defaultProps = {
@@ -41,5 +39,4 @@ Google.defaultProps = {
   format: 'auto',
   layout: '',
   responsive: 'false',
-  isTest: false,
 };
