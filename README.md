@@ -49,7 +49,7 @@ import AdSense from 'react-adsense';
   format='fluid'
 />
 
-// responsive and native ads
+// test while development on localhost
 <AdSense.Google
   client='ca-pub-7292810486004926'
   slot='7806394673'
