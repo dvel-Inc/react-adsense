@@ -1,12 +1,17 @@
- pre {
+pre {
   background-color: #f6dcd7;
   padding: 10px 15px;
 }
+
 pre.strong {
   font-weight: bold;
 }
 
 #wrapper {
-	max-width: 1000px;
-	margin: 0 auto;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.adsbygoogle {
+  border: 1px dotted red;
 }
