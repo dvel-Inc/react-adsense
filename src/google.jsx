@@ -2,10 +2,34 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class Google extends React.Component {
-  startObserver() {
-    // Select the node that will be observed for mutations
-    const targetNode = document.getElementById(this.uniqueId);
+  checkIfAdIsEmpty(node) {
+    const adNode = node || document.getElementById(this.uniqueId);
+    console.log('now check if there is something in the iframe');
+    let iframeOutter = targetNode.getElementsByTagName('iframe')[0];
+    if (!iframeOutter) return;
+    iframeOutter = iframeOutter.contentDocument || iframeOutter.contentWindow.document;
+    console.log('iframeOutter:', iframeOutter);
 
+    let iframeWithAd = iframeOutter.getElementsByTagName('iframe');
+    // [0] = google_esf; this is only in the first Ad, if you have more than 2 Ads on a page, then
+    // the second iframe does not include this google_esf iframe
+    // [1] = google_ads_frame[x]
+    iframeWithAd = iframeWithAd[1] || iframeWithAd[0];
+    if (!iframeWithAd) return;
+    iframeWithAd = iframeWithAd.contentDocument || iframeWithAd.contentWindow.document;
+
+    console.log('iframeWithAd:', iframeWithAd);
+    console.log('body', iframeWithAd.body);
+    console.log('.innerHTML', iframeWithAd.body.innerHTML, iframeWithAd.body.innerHTML.length);
+    if (!iframeWithAd.body.innerHTML || iframeWithAd.body.innerHTML.length === 0) {
+      // hide the Ad
+      adNode.style.display = 'none';
+    }
+  }
+
+  startObserver() {
+    const adNode = document.getElementById(this.uniqueId);
+    console.log('startObserver on:', adNode);
     const callback = (mutationsList) => {
       for (let mutation of mutationsList) {
         if (mutation.type === 'attributes') {
@@ -13,27 +37,7 @@ export default class Google extends React.Component {
           // google sdk changes this attr to "done" once its done
           if (mutation.attributeName === 'data-adsbygoogle-status') {
             // now check if there is something in the iframe
-            console.log('now check if there is something in the iframe');
-            let iframeOutter = targetNode.getElementsByTagName('iframe')[0];
-            if (!iframeOutter) return;
-            iframeOutter = iframeOutter.contentDocument || iframeOutter.contentWindow.document;
-            console.log('iframeOutter:', iframeOutter);
-
-            let iframeWithAd = iframeOutter.getElementsByTagName('iframe');
-            // [0] = google_esf; this is only in the first Ad, if you have more than 2 Ads on a page, then
-            // the second iframe does not include this google_esf iframe
-            // [1] = google_ads_frame[x]
-            iframeWithAd = iframeWithAd[1] || iframeWithAd[0];
-            if (!iframeWithAd) return;
-            iframeWithAd = iframeWithAd.contentDocument || iframeWithAd.contentWindow.document;
-
-            console.log('iframeWithAd:', iframeWithAd);
-            console.log('body', iframeWithAd.body);
-            console.log('.innerHTML', iframeWithAd.body.innerHTML, iframeWithAd.body.innerHTML.length);
-            if (!iframeWithAd.body.innerHTML || iframeWithAd.body.innerHTML.length === 0) {
-              // hide the Ad
-              targetNode.style.display = 'none';
-            }
+            this.checkIfAdIsEmpty(adNode);
           }
         }
       }
@@ -42,7 +46,7 @@ export default class Google extends React.Component {
     // Create an observer instance linked to the callback function
     this.observer = new MutationObserver(callback);
     // Start observing the target node for configured mutations
-    this.observer.observe(targetNode, { attributes: true });
+    this.observer.observe(adNode, { attributes: true });
 
   }
 
@@ -54,10 +58,13 @@ export default class Google extends React.Component {
 
   componentWillMount() {
     this.uniqueId = `gad_${Math.round(Math.random() * 1000000)}`;
+    console.log('componentWillMount', this.uniqueId);
   }
 
   componentDidMount() {
+    console.log('componentDidMount', this.uniqueId);
     if (this.props.autoCollapseEmptyAds) {
+      console.log('componentDidMount, startObserver');
       this.startObserver();
     }
 
@@ -69,13 +76,8 @@ export default class Google extends React.Component {
     this.stopObserver();
   }
 
-  checkIfChanged() {
-
-    setTimeout(this.checkIfChanged, 2000);
-  }
-
   render() {
-    console.log('render', this.uniqueId);
+    console.log('render ad:', this.uniqueId);
 
     return (
       <ins className={`${this.props.className} adsbygoogle`}
