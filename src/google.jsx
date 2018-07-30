@@ -32,7 +32,7 @@ Google.propTypes = {
   layoutKey: PropTypes.string,
   format: PropTypes.string,
   responsive: PropTypes.string,
-  isTest: PropTypes.boolean,
+  isTest: PropTypes.bool,
 };
 
 Google.defaultProps = {
