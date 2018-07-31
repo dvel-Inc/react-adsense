@@ -7,9 +7,25 @@ export default class Google extends React.Component {
     console.log('body.innerHTML', this.iframeWithAd.body.innerHTML, this.iframeWithAd.body.innerHTML.length);
     if (!this.iframeWithAd.body.innerHTML || this.iframeWithAd.body.innerHTML.length === 0) {
       // hide the Ad
+      console.log('hide Ad');
       this.adNode.style.display = 'none';
     } else {
       this.adNode.style.display = 'block';
+    }
+
+    // check again after some time:
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
+    if (this.checkAdTimerCounter < 5) {
+      console.log(Date.now(), 'before setTimeout', this.checkAdTimerCounter);
+      const that = this;
+      this.timer = setTimeout(() => {
+        console.log(Date.now(), 'after setTimeout', that.checkAdTimerCounter);
+        that.checkIfAdIsEmpty.call(that); // use `call` to have the correct scope in the function later
+        that.checkAdTimerCounter += 1;
+      }, 1000);
     }
   }
 
@@ -51,14 +67,14 @@ export default class Google extends React.Component {
             adNodeId: this.adNode.id,
           },
           mutation);
-        if (
-          // all-non style
-          mutation.attributeName !== 'style'
-          // all style, but not the adNode element, otherwise circular hell
-          || (mutation.attributeName === 'style' && mutation.target.id !== this.adNode.id)
-        ) {
-          this.checkIfAdIsEmpty();
-        }
+        // if (
+        //   // all-non style
+        //   mutation.attributeName !== 'style'
+        //   // all style, but not the adNode element, otherwise circular hell
+        //   || (mutation.attributeName === 'style' && mutation.target.id !== this.adNode.id)
+        // ) {
+        this.checkIfAdIsEmpty();
+        // }
 
         // if (mutation.type === 'attributes') {
         //   console.log(this.uniqueId, 'The "' + mutation.attributeName + '" attribute was modified.');
@@ -78,6 +94,7 @@ export default class Google extends React.Component {
   }
 
   stopObserver() {
+    this.checkAdTimerCounter = 999999; // to avoid setTimeout running forever
     if (this.observer) {
       this.observer.disconnect();
     }
@@ -85,6 +102,7 @@ export default class Google extends React.Component {
 
   componentWillMount() {
     this.uniqueId = `gad_${Math.round(Math.random() * 1000000)}`;
+    this.checkAdTimerCounter = 0;
     console.log('componentWillMount', this.uniqueId);
   }
 
