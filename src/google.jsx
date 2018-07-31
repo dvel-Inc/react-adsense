@@ -3,11 +3,9 @@ import PropTypes from 'prop-types';
 
 export default class Google extends React.Component {
   checkIfAdIsEmptyWithCachedIframe() {
-    console.log('iframeWithAd:', this.iframeWithAd);
     console.log('body.innerHTML', this.iframeWithAd.body.innerHTML, this.iframeWithAd.body.innerHTML.length);
     if (!this.iframeWithAd.body.innerHTML || this.iframeWithAd.body.innerHTML.length === 0) {
       // hide the Ad
-      console.log('hide Ad');
       this.adNode.style.display = 'none';
     } else {
       this.adNode.style.display = 'block';
@@ -19,7 +17,6 @@ export default class Google extends React.Component {
       this.timer = null;
     }
     if (this.checkAdTimerCounter < 5) {
-      console.log(Date.now(), 'before setTimeout', this.checkAdTimerCounter);
       const that = this;
       this.timer = setTimeout(() => {
         console.log(Date.now(), 'after setTimeout', that.checkAdTimerCounter);
@@ -32,7 +29,6 @@ export default class Google extends React.Component {
   checkIfAdIsEmpty() {
     if (this.iframeWithAd) {
       // iframeWithAd is already cached
-      console.log('iframeWithAd is already cached');
       this.checkIfAdIsEmptyWithCachedIframe();
       return;
     }
@@ -41,7 +37,7 @@ export default class Google extends React.Component {
     let iframeOutter = this.adNode.getElementsByTagName('iframe')[0];
     if (!iframeOutter) return;
     iframeOutter = iframeOutter.contentDocument || iframeOutter.contentWindow.document;
-    console.log('iframeOutter:', iframeOutter);
+    // console.log('iframeOutter:', iframeOutter);
 
     this.iframeWithAd = iframeOutter.getElementsByTagName('iframe');
     // [0] = google_esf; this is only in the first Ad, if you have more than 2 Ads on a page, then
@@ -103,13 +99,10 @@ export default class Google extends React.Component {
   componentWillMount() {
     this.uniqueId = `gad_${Math.round(Math.random() * 1000000)}`;
     this.checkAdTimerCounter = 0;
-    console.log('componentWillMount', this.uniqueId);
   }
 
   componentDidMount() {
-    console.log('componentDidMount', this.uniqueId);
     if (this.props.autoCollapseEmptyAds) {
-      console.log('componentDidMount, startObserver');
       this.startObserver();
     }
 
@@ -117,7 +110,6 @@ export default class Google extends React.Component {
   };
 
   componentWillUnmount() {
-    console.log('unmount');
     this.stopObserver();
   }
 
