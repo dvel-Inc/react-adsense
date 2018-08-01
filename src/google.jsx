@@ -2,13 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class Google extends React.Component {
+
+  showAdNode() {
+    this.adNode.style.display = 'block';
+  }
+
+  hideAdNode() {
+    this.adNode.style.display = 'none';
+  }
+
   checkIfAdIsEmptyWithCachedIframe() {
     console.log('body.innerHTML', this.iframeWithAd.body.innerHTML, this.iframeWithAd.body.innerHTML.length);
     if (!this.iframeWithAd.body.innerHTML || this.iframeWithAd.body.innerHTML.length === 0) {
-      // hide the Ad
-      this.adNode.style.display = 'none';
+      this.hideAdNode();
     } else {
-      this.adNode.style.display = 'block';
+      this.showAdNode();
     }
 
     // check again after some time:
@@ -27,12 +35,6 @@ export default class Google extends React.Component {
   }
 
   checkIfAdIsEmpty() {
-    if (this.iframeWithAd) {
-      // iframeWithAd is already cached
-      this.checkIfAdIsEmptyWithCachedIframe();
-      return;
-    }
-
     console.log(new Date(), 'now check if there is something in the iframe', this.adNode);
     let iframeOutter = this.adNode.getElementsByTagName('iframe')[0];
     if (!iframeOutter) return;
@@ -45,9 +47,15 @@ export default class Google extends React.Component {
     // [1] = google_ads_frame[x]
     this.iframeWithAd = this.iframeWithAd[1] || this.iframeWithAd[0];
     if (!this.iframeWithAd) return;
-    this.iframeWithAd = this.iframeWithAd.contentDocument || this.iframeWithAd.contentWindow.document;
-
-    this.checkIfAdIsEmptyWithCachedIframe();
+    try {
+      this.iframeWithAd = this.iframeWithAd.contentDocument || this.iframeWithAd.contentWindow.document;
+      this.checkIfAdIsEmptyWithCachedIframe();
+    } catch (e) {
+      // DOMException: Blocked a frame with origin ...
+      // when it fails to access the iframe, then we know that the Ad is in there ;)
+      console.warn('iframeWithAd access:', e);
+      this.showAdNode();
+    }
   }
 
   startObserver() {
