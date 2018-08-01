@@ -114,8 +114,6 @@ export default class Google extends React.Component {
   }
 
   render() {
-    console.log('render ad:', this.uniqueId);
-
     return (
       <ins className={`${this.props.className} adsbygoogle`}
            id={this.uniqueId}
