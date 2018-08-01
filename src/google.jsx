@@ -63,14 +63,14 @@ export default class Google extends React.Component {
             adNodeId: this.adNode.id,
           },
           mutation);
-        // if (
-        //   // all-non style
-        //   mutation.attributeName !== 'style'
-        //   // all style, but not the adNode element, otherwise circular hell
-        //   || (mutation.attributeName === 'style' && mutation.target.id !== this.adNode.id)
-        // ) {
-        this.checkIfAdIsEmpty();
-        // }
+        if (
+          // all-non style
+          mutation.attributeName !== 'style'
+          // all style, but not the adNode element, otherwise circular hell
+          || (mutation.attributeName === 'style' && mutation.target.id !== this.adNode.id)
+        ) {
+          this.checkIfAdIsEmpty();
+        }
 
         // if (mutation.type === 'attributes') {
         //   console.log(this.uniqueId, 'The "' + mutation.attributeName + '" attribute was modified.');
