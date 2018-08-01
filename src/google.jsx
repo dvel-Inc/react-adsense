@@ -105,8 +105,11 @@ export default class Google extends React.Component {
     if (this.props.autoCollapseEmptyAds) {
       this.startObserver();
     }
-
-    if (window) (window.adsbygoogle = window.adsbygoogle || []).push({});
+    try {
+      if (window) (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.warn('warn with google adsense:', e);
+    }
   };
 
   componentWillUnmount() {
