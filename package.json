@@ -54,7 +54,9 @@
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.9.7"
   },
-  "dependencies": {},
+  "dependencies": {
+    "html2canvas": "^1.0.0-alpha.12"
+  },
   "peerDependencies": {
     "react": ">=0.13.2 || ^0.14 || ^15.0.0 || ^16.0.0",
     "prop-types": ">=15.0.0"

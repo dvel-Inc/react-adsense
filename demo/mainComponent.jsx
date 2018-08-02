@@ -29,12 +29,12 @@ const MainComponent = React.createClass({
         {/*slot='5024324066'*/}
         {/*/>*/}
 
-        <h2> 4. in-article layout + autoCollapseEmptyAds </h2>
+        <h2> 4. in-article layout + autoCollapseEmptyAdsWithScreenshot </h2>
         <AdSense.Google
           client='ca-pub-1573644262300775'
           slot='5024324066'
           layout='in-article'
-          autoCollapseEmptyAds
+          autoCollapseEmptyAdsWithScreenshot
         />
 
         <h2> 5. full-config Demo </h2>

@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import html2canvas from 'html2canvas';
+import canvasHelper from './canvasHelper';
 
 export default class Google extends React.Component {
 
@@ -48,6 +50,8 @@ export default class Google extends React.Component {
     this.iframeWithAd = this.iframeWithAd[1] || this.iframeWithAd[0];
     if (!this.iframeWithAd) return;
     try {
+      console.log('1', this.iframeWithAd);
+      console.log('2', this.iframeWithAd.innerHTML);
       this.iframeWithAd = this.iframeWithAd.contentDocument || this.iframeWithAd.contentWindow.document;
       this.checkIfAdIsEmptyWithCachedIframe();
     } catch (e) {
@@ -104,6 +108,44 @@ export default class Google extends React.Component {
     }
   }
 
+  checkIfAdIsEmptyWithScreenshot() {
+    const that = this;
+    this.adNode = document.getElementById(this.uniqueId);
+    setTimeout(() => {
+      console.time('checkIfAdIsEmptyWithScreenshot');
+      html2canvas(this.adNode, { logging: false, useCORS: true, allowTaint: false })
+        .then((canvas) => {
+          console.timeEnd('checkIfAdIsEmptyWithScreenshot');
+          document.body.appendChild(canvas); // TODO rm
+          console.time('getContext');
+          const ctx = canvas.getContext('2d');
+          console.timeEnd('getContext');
+          console.time('checker');
+          const startPixel = 5; // sometimes Ad container have a border, do not take possible border into account
+          let pixelColorMatch = true;
+          let firstPixel = canvasHelper.getCanvasPixelColor(ctx, startPixel, startPixel);
+          for (let x = startPixel; x <= canvas.width - startPixel && pixelColorMatch; x += 5) {
+            for (let y = startPixel; y <= canvas.height - startPixel && pixelColorMatch; y += 5) {
+              // console.log(x, y, '\t', firstPixel.rgbm, canvasHelper.getCanvasPixelColor(ctx, x, y).rgb,
+              //   firstPixel.rgb === canvasHelper.getCanvasPixelColor(ctx, x, y).rgb);
+              if (firstPixel.rgb !== canvasHelper.getCanvasPixelColor(ctx, x, y).rgb) {
+                pixelColorMatch = false;
+              }
+            }
+          }
+          console.timeEnd('checker');
+
+          console.log({ pixelColorMatch });
+          if (pixelColorMatch) {
+            this.hideAdNode();
+          } else {
+            this.showAdNode();
+          }
+        });
+    }, 2000);
+
+  }
+
   componentWillMount() {
     this.uniqueId = `gad_${Math.round(Math.random() * 1000000)}`;
     this.checkAdTimerCounter = 0;
@@ -112,6 +154,9 @@ export default class Google extends React.Component {
   componentDidMount() {
     if (this.props.autoCollapseEmptyAds) {
       this.startObserver();
+    }
+    if (this.props.autoCollapseEmptyAdsWithScreenshot) {
+      this.checkIfAdIsEmptyWithScreenshot();
     }
     try {
       if (window) (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -160,4 +205,5 @@ Google.defaultProps = {
   layout: '',
   responsive: 'false',
   autoCollapseEmptyAds: false,
+  autoCollapseEmptyAdsWithScreenshot: false,
 };
