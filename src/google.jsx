@@ -109,11 +109,10 @@ export default class Google extends React.Component {
   }
 
   checkIfAdIsEmptyWithScreenshot() {
-    const that = this;
     this.adNode = document.getElementById(this.uniqueId);
     setTimeout(() => {
       console.time('checkIfAdIsEmptyWithScreenshot');
-      html2canvas(this.adNode, { logging: false, useCORS: true, allowTaint: false })
+      html2canvas(this.adNode, { logging: false, useCORS: true, allowTaint: false, foreignObjectRendering: true })
         .then((canvas) => {
           console.timeEnd('checkIfAdIsEmptyWithScreenshot');
           document.body.appendChild(canvas); // TODO rm
